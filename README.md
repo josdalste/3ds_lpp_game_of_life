@@ -1,4 +1,10 @@
-# 3ds_lpp_game_of_life
-Conway's Game of Life for Nintendo 3DS developed in LPP-3DS
+# Conway's Game of Life
+Created for the Nintendo 3DS using LPP-3DS.
 
-Allows the user to select from four different sized environments, randomise environments or clear and design their own.
+This application allows the user to:
+	• Select from four different sized environments
+	• Randomise an environment
+	• Clear an environment
+	• Make changes to the environment
+	
+Stereoscopic graphics are supported.
