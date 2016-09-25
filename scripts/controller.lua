@@ -1,41 +1,65 @@
 function read_control()
-	value = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	pad = Controls.read()
+	local value = {}
+	local pad = Controls.read()
 	if (Controls.check(pad,KEY_A)) then
-		value [1] = 1
+		value ["a"] = 1
+	else
+		prev_ctrl["a"] = 0
 	end
 	if (Controls.check(pad,KEY_B)) then
-		value [2] = 1
+		value ["b"] = 1
+	else
+		prev_ctrl["b"] = 0
 	end
 	if (Controls.check(pad,KEY_Y)) then
-		value [3] = 1
+		value ["y"] = 1
+	else
+		prev_ctrl["y"] = 0
 	end
 	if (Controls.check(pad,KEY_X)) then
-		value [4] = 1
+		value ["x"] = 1
+	else
+		prev_ctrl["x"] = 0
 	end
 	if (Controls.check(pad,KEY_L)) then
-		value [5] = 1
+		value ["l"] = 1
+	else
+		prev_ctrl["l"] = 0
 	end
 	if (Controls.check(pad,KEY_R)) then
-		value [6] = 1
+		value ["r"] = 1
+	else
+		prev_ctrl["r"] = 0
 	end
 	if (Controls.check(pad, KEY_DRIGHT)) then
-		value [7] = 1
+		value ["dr"] = 1
+	else
+		prev_ctrl["dr"] = 0
 	end
 	if (Controls.check(pad, KEY_DDOWN)) then
-		value [8] = 1
+		value ["dd"] = 1
+	else
+		prev_ctrl["dd"] = 0
 	end
 	if (Controls.check(pad, KEY_DLEFT)) then
-		value [9] = 1
+		value ["dl"] = 1
+	else
+		prev_ctrl["dl"] = 0
 	end
 	if (Controls.check(pad, KEY_DUP)) then
-		value [10] = 1
+		value ["du"] = 1
+	else
+		prev_ctrl["du"] = 0
 	end
 	if (Controls.check(pad, KEY_SELECT)) then
-		value [11] = 1
+		value ["se"] = 1
+	else
+		prev_ctrl["se"] = 0
 	end
 	if (Controls.check(pad, KEY_START)) then
-		value [12] = 1
+		value ["st"] = 1
+	else
+		prev_ctrl["st"] = 0
 	end
 	if (Controls.check(pad, KEY_HOME)) then
 		System.showHomeMenu()
