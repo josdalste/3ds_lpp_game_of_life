@@ -1,3 +1,4 @@
+prev_ctrl= {["a"] = 0,["b"] =  0, ["y"] = 0, ["x"] = 0,["l"] =  0, ["r"] = 0, ["dr"] = 0,["dd"] =  0,["dl"] =  0, ["du"] = 0, ["se"] = 0, ["st"] = 0}
 function read_control()
 	local value = {}
 	local pad = Controls.read()

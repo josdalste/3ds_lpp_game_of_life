@@ -1,8 +1,8 @@
 --------------------------------------------------------
 -- Include Code
 --------------------------------------------------------
-dofile("/3ds/life/scripts/controller.lua")
-dofile("/3ds/life/scripts/cpu_speed.lua")
+dofile("romfs:/scripts/controller.lua")
+dofile("romfs:/scripts/cpu_speed.lua")
 
 --------------------------------------------------------
 -- Initialise the GPU
@@ -17,36 +17,40 @@ math.randomseed(os.time())
 --------------------------------------------------------
 -- Initial values needed
 --------------------------------------------------------
-prev_ctrl= {["a"] = 0,["b"] =  0, ["y"] = 0, ["x"] = 0,["l"] =  0, ["r"] = 0, ["dr"] = 0,["dd"] =  0,["dl"] =  0, ["du"] = 0, ["se"] = 0, ["st"] = 0}
-btn_time = {2, 4, 8, 16}
+btn_time = {2, 2, 4, 8, 16}
 world = {}
 cursorpos = {0,0}
-cell_array = {5, 10, 16, 20}
-grid_size = {{80, 48},{40, 24},{25, 15},{20, 12}}
-update_time = {0, 2, 2, 3}
+cell_array = {4, 5, 10, 16, 20}
+grid_size = {{100, 60},{80, 48},{40, 24},{25, 15},{20, 12}}
+update_time = {0, 0, 2, 2, 3}
 check_ = 0
 icon_pos = 0
 min_size = 1
-max_size = 4
-cell_num = 2
+max_size = 5
+cell_num = 3
 update_num = 0
 stereo_enable = false
 paused = false
+start = true
+random = true
+
 --------------------------------------------------------
 -- Load the graphics for the program
 --------------------------------------------------------
-bottom_screen = Graphics.loadImage("/3ds/life/graphics/bottom_screen.png")
-pause = Graphics.loadImage("/3ds/life/graphics/pause.png")
-load_icon = Screen.loadImage("/3ds/life/graphics/load.png")
+-- /3ds/life/ for .3dsx
+bottom_screen = Graphics.loadImage("romfs:/graphics/bottom_screen.png")
+pause = Graphics.loadImage("romfs:/graphics/pause.png")
+logo = Graphics.loadImage("romfs:/graphics/logo.png")
+start_bg = Graphics.loadImage("romfs:/graphics/top_screen.png")
 
 --------------------------------------------------------
 -- Draw the initial screen layout
 --------------------------------------------------------
 function random_screen()
 	local temp_num
-	bg = Graphics.loadImage("/3ds/life/graphics/bg"..cell_array[cell_num]..".png")
-	cursor = Graphics.loadImage("/3ds/life/graphics/cursor"..cell_array[cell_num]..".png")
-	blocks = Graphics.loadImage("/3ds/life/graphics/blocks"..cell_array[cell_num]..".png")
+	bg = Graphics.loadImage("romfs:/graphics/bg"..cell_array[cell_num]..".png")
+	cursor = Graphics.loadImage("romfs:/graphics/cursor"..cell_array[cell_num]..".png")
+	blocks = Graphics.loadImage("romfs:/graphics/blocks"..cell_array[cell_num]..".png")
 	world_w = grid_size[cell_num][1]
 	world_h = grid_size[cell_num][2]
 	for h = 1, world_w do
@@ -57,6 +61,7 @@ function random_screen()
 		end
 	end
 end
+
 --------------------------------------------------------
 -- Draw the images
 --------------------------------------------------------
@@ -71,6 +76,7 @@ function draw_screen(offset)
 			end
 		end
 	end
+	
 	--------------------------------------------------------
 	-- Draw cursor if required
 	--------------------------------------------------------
@@ -83,14 +89,14 @@ end
 -- Draw lower screen information
 --------------------------------------------------------
 function lower_screen_info(bool)
-		Graphics.initBlend(BOTTOM_SCREEN)
-		Graphics.drawImage(0,0,bottom_screen)
-		if (bool == true) then
-			Graphics.drawImage(0,0, pause)
-		end
-		Graphics.termBlend()
-		Screen.flip()
-		Screen.waitVblankStart()
+	Graphics.initBlend(BOTTOM_SCREEN)
+	Graphics.drawImage(0,0,bottom_screen)
+	if (bool == true) then
+		Graphics.drawImage(0,0, pause)
+	end
+	Graphics.termBlend()
+	Screen.flip()
+	Screen.waitVblankStart()
 end
 
 --------------------------------------------------------
@@ -112,6 +118,7 @@ function upper_screen_info()
 		Graphics.termBlend()
 	end
 end
+
 --------------------------------------------------------
 -- Code for the sim paused
 --------------------------------------------------------
@@ -206,15 +213,46 @@ function controls(bool)
 		
 		-- (A) button
 		if (read_control()["a"] == 1 and prev_ctrl["a"] == 0) then
-			prev_ctrl["a"] = 1
+			if(cx > 20 or cx < -20 or cy > 20 or cy < -20) then
+				prev_ctrl["a"] = 0
+			else
+				prev_ctrl["a"] = 1
+			end
 			if (world[cursorpos[1]+1][cursorpos[2]+1] == 1) then
 				world[cursorpos[1]+1][cursorpos[2]+1] = 0
 			else
 				world[cursorpos[1]+1][cursorpos[2]+1] = 1
 			end
 		end
+		
+		-- Circle Pad
+		cx,cy = Controls.readCirclePad()
+		-- Circle pad max values are ~ +160 to ~ -160.
+		local x_pos_array = {{20, 55, 1}, {55, 90, 2}, {90, 125, 3}, {125, 160, 4}}
+		local x_neg_array = {{-20, -55, 1}, {-55, -90, 2}, {-90, -125, 3}, {-125, -160, 4}}
+		local y_pos_array = {{20, 55, 1}, {55, 90, 2}, {90, 125, 3}, {125, 160, 4}}
+		local y_neg_array = {{-20, -55, 1}, {-55, -90, 2}, {-90, -125, 3}, {-125, -160, 4}}
+		
+		for v = 1, 4 do
+			if (cx > x_pos_array[v][1] and cx < x_pos_array[v][2]) then
+				cursorpos[1] = cursorpos[1] + x_pos_array[v][3]
+			end
+			
+			if (cx < x_neg_array[v][1] and cx > x_neg_array[v][2]) then
+				cursorpos[1] = cursorpos[1] - x_neg_array[v][3]
+			end
+			
+			if (cy > y_pos_array[v][1] and cy < y_pos_array[v][2]) then
+				cursorpos[2] = cursorpos[2] - y_pos_array[v][3]
+			end
+			
+			if (cy < y_neg_array[v][1] and cy > y_neg_array[v][2]) then
+				cursorpos[2] = cursorpos[2] + y_neg_array[v][3]
+			end
+		end
 	end
 end
+
 --------------------------------------------------------
 -- Code shared between paused and active states
 --------------------------------------------------------
@@ -296,14 +334,58 @@ function resume_sim()
 	end
 	lower_screen_info(false)
 end
-random_screen()
+
+--------------------------------------------------------
+-- Code for the start screen
+--------------------------------------------------------
+function draw_start_top(offset)
+	Graphics.drawImage(0, 0, start_bg)
+	Graphics.drawImage(offset, 0, logo)
+	Graphics.termBlend()
+end
+
+function start_screen()
+	read_control()
+	-- (Start) button
+	if (read_control()["st"] == 1) then
+		prev_ctrl["st"] = 1
+		start = false
+		paused = true
+	end
+	Screen.refresh()
+	if(Screen.get3DLevel() > 0) then
+		Screen.enable3D()
+		Graphics.initBlend(TOP_SCREEN, RIGHT_EYE)
+		draw_start_top(1)
+		Graphics.initBlend(TOP_SCREEN, LEFT_EYE)
+		draw_start_top(-1)
+	else
+		Screen.disable3D()
+		Graphics.initBlend(TOP_SCREEN)
+		draw_start_top(0)
+	end
+	Graphics.initBlend(BOTTOM_SCREEN)
+	Screen.flip()
+	Graphics.termBlend()
+	Screen.waitVblankStart()
+end
+
 --------------------------------------------------------
 -- The main loop
 --------------------------------------------------------
 while true do
-	if (paused == true) then
-		pause_sim()
+	if (start == true) then
+		start_screen()
 	else
-		resume_sim()
+		if (random == true) then
+			random_screen()
+			random = false
+		end
+		
+		if (paused == true) then
+			pause_sim()
+		else
+			resume_sim()
+		end
 	end
 end
