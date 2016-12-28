@@ -18,6 +18,7 @@ math.randomseed(os.time())
 -- Initial values needed
 --------------------------------------------------------
 btn_time = {2, 2, 4, 8, 16}
+circle_pad = {0, 0, 0, 0}
 world = {}
 cursorpos = {0,0}
 cell_array = {4, 5, 10, 16, 20}
@@ -232,22 +233,45 @@ function controls(bool)
 		local x_neg_array = {{-20, -55, 1}, {-55, -90, 2}, {-90, -125, 3}, {-125, -160, 4}}
 		local y_pos_array = {{20, 55, 1}, {55, 90, 2}, {90, 125, 3}, {125, 160, 4}}
 		local y_neg_array = {{-20, -55, 1}, {-55, -90, 2}, {-90, -125, 3}, {-125, -160, 4}}
+		local reset_values = false
 		
 		for v = 1, 4 do
 			if (cx > x_pos_array[v][1] and cx < x_pos_array[v][2]) then
-				cursorpos[1] = cursorpos[1] + x_pos_array[v][3]
+				circle_pad[1] = circle_pad[1] + 1
+				if (circle_pad[1] >= x_pos_array[v][3]) then
+					cursorpos[1] = cursorpos[1] + 1
+					reset_values = true
+				end
 			end
 			
 			if (cx < x_neg_array[v][1] and cx > x_neg_array[v][2]) then
-				cursorpos[1] = cursorpos[1] - x_neg_array[v][3]
+				circle_pad[2] = circle_pad[2] + 1
+				if (circle_pad[2] >= x_neg_array[v][3]) then
+					cursorpos[1] = cursorpos[1] - 1
+					reset_values = true
+				end
 			end
 			
 			if (cy > y_pos_array[v][1] and cy < y_pos_array[v][2]) then
-				cursorpos[2] = cursorpos[2] - y_pos_array[v][3]
+				circle_pad[3] = circle_pad[3] + 1
+				if (circle_pad[3] >= y_pos_array[v][3]) then
+					cursorpos[2] = cursorpos[2] - 1
+					reset_values = true
+				end
 			end
 			
 			if (cy < y_neg_array[v][1] and cy > y_neg_array[v][2]) then
-				cursorpos[2] = cursorpos[2] + y_neg_array[v][3]
+				circle_pad[4] = circle_pad[4] + 1
+				if (circle_pad[4] >= y_neg_array[v][3]) then
+					cursorpos[2] = cursorpos[2] + 1
+					reset_values = true
+				end
+			end
+			if (reset_values == true) then
+				circle_pad[1] = 0
+				circle_pad[2] = 0
+				circle_pad[3] = 0
+				circle_pad[4] = 0
 			end
 		end
 	end
